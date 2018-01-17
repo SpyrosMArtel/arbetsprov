@@ -8,6 +8,8 @@ import io.dropwizard.setup.Environment;
 import io.federecio.dropwizard.swagger.SwaggerBundle;
 import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration;
 import se.contribe.core.Book;
+import se.contribe.db.BookDAO;
+import se.contribe.resources.BookResource;
 
 import javax.sql.DataSource;
 
@@ -41,5 +43,9 @@ public class Bookstore extends Application<BookstoreConfiguration> {
     public void run(BookstoreConfiguration bookstoreConfiguration, Environment environment) throws Exception {
         // Datasource configuration
         final DataSource dataSource = bookstoreConfiguration.getDataSourceFactory().build(environment.metrics(), SQL);
+        final BookDAO bookDAO = new BookDAO(hibernate.getSessionFactory());
+
+        // Register resources
+        environment.jersey().register(new BookResource(bookDAO));
     }
 }
