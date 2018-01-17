@@ -1,0 +1,31 @@
+database:
+  properties:
+    hibernate.dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+    hibernate.generate.statistics: true
+    hibernate.show_sql: true
+    hibernate.format_sql: true
+    hibernate.hbm2ddl.auto: create
+    hibernate.hbm2ddl.import_files: import.sql
+  driverClass: com.mysql.cj.jdbc.Driver
+  url: jdbc:mysql://192.168.56.100:3306/bookstore
+  user: root
+  password: root
+  maxWaitForConnection: 1s
+  validationQuery: "SELECT 1"
+  validationQueryTimeout: 3s
+  minSize: 8
+  maxSize: 32
+  checkConnectionWhileIdle: false
+  evictionInterval: 10s
+  minIdleTime: 1 minute
+  checkConnectionOnBorrow: true
+
+server:
+  type: simple
+  rootPath: '/api/*'
+  applicationContextPath: /
+  gzip:
+    enabled: true
+
+swagger:
+  resourcePackage: se.contribe.resources

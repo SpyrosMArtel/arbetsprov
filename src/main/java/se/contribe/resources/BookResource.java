@@ -5,8 +5,10 @@ import com.wordnik.swagger.annotations.ApiParam;
 import io.dropwizard.hibernate.UnitOfWork;
 import se.contribe.core.Book;
 import se.contribe.core.BookList;
+import se.contribe.core.BookStatusEnum;
 import se.contribe.db.BookDAO;
 
+import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -27,7 +29,7 @@ public class BookResource implements BookList {
     @Timed
     @UnitOfWork
     public List<Book> listBooks() {
-        return Collections.emptyList();
+        return bookDAO.findAll();
     }
 
     @GET
@@ -47,9 +49,11 @@ public class BookResource implements BookList {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces("application/json")
     @UnitOfWork
-    public Response.Status updateBook(@ApiParam(
-            required = true, value = "A Book in JSON format, where the id specifies the book.") Book book,
-                                      @PathParam("bookId") long bookId) {
+    public Response.Status updateBook(@Valid Book book, @PathParam("bookId") long bookId) {
+        if (book.getId() == null) {
+            book.setId(bookId);
+        }
+        bookDAO.update(book);
         return Response.Status.OK;
     }
 
@@ -57,6 +61,7 @@ public class BookResource implements BookList {
     @Path("/{bookId}")
     @UnitOfWork
     public Response.Status deleteBook(@PathParam("bookId") long bookId) {
+        bookDAO.delete(this.getBook(bookId));
         return Response.Status.NO_CONTENT;
     }
 
@@ -66,8 +71,10 @@ public class BookResource implements BookList {
     @Path("/search/{searchString}")
     @Timed
     @UnitOfWork
-    public Book[] list(String searchString) {
-        return new Book[0];
+    public Book[] list(@PathParam("searchString") String searchString) {
+        List objects = bookDAO.searchByKeyword(searchString);
+        Book[] books = (Book[]) objects.toArray(new Book[objects.size()]);
+        return books;
     }
 
     @Override
@@ -75,8 +82,11 @@ public class BookResource implements BookList {
     @Path("/add/{quantity}")
     @Consumes(MediaType.APPLICATION_JSON)
     @UnitOfWork
-    public boolean add(Book book, int quantity) {
-        return false;
+    public boolean add(Book book, @PathParam("quantity") int quantity) {
+        book.setId(null);
+        book.setQuantity(quantity);
+        long bookId = bookDAO.create(book);
+        return bookId != -1;
     }
 
     @Override
@@ -86,11 +96,26 @@ public class BookResource implements BookList {
     @Produces("application/json")
     @UnitOfWork
     public int[] buy(Book... books) {
-        return new int[0];
+        int[] bookStatuses = new int[books.length];
+        List<Book> booksFromDb = bookDAO.findAll();
+        for (int index = 0; index < books.length; index++) {
+            Book book = books[index];
+            if (booksFromDb.contains(book)) {
+                int bookIndex = booksFromDb.indexOf(book);
+                if (booksFromDb.get(bookIndex).getQuantity() <= 0) {
+                    bookStatuses[index] = BookStatusEnum.NOT_IN_STOCK.getValue();
+                } else if (booksFromDb.get(bookIndex).getQuantity() > 0) {
+                    bookStatuses[index] = BookStatusEnum.OK.getValue();
+                }
+            } else {
+                bookStatuses[index] = BookStatusEnum.DOES_NOT_EXIST.getValue();
+            }
+        }
+        return bookStatuses;
     }
 
     private Book findSafely(long bookId) {
-        final Optional<Book> book = Optional.empty();
+        final Optional<Book> book = Optional.ofNullable(bookDAO.findById(bookId));
         if (!book.isPresent()) {
             throw new WebApplicationException(Response.Status.NOT_FOUND);
         }
