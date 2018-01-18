@@ -10,6 +10,7 @@ import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration;
 import se.contribe.core.Book;
 import se.contribe.db.BookDAO;
 import se.contribe.resources.BookResource;
+import se.contribe.resources.CartResource;
 
 import javax.sql.DataSource;
 
@@ -47,5 +48,6 @@ public class Bookstore extends Application<BookstoreConfiguration> {
 
         // Register resources
         environment.jersey().register(new BookResource(bookDAO));
+        environment.jersey().register(new CartResource(bookDAO));
     }
 }
