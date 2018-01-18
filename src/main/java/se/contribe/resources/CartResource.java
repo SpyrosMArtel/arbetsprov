@@ -14,6 +14,7 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 @Path("/cart")
+@Api(value = "/cart", description = "Operations on the shopping cart")
 public class CartResource {
     private Cart cart;
     private final BookDAO bookDAO;
@@ -26,6 +27,10 @@ public class CartResource {
     @GET
     @Produces("application/json")
     @Timed
+    @ApiOperation(value = "Returns the cart contents")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success!!"),
+    })
     @UnitOfWork
     public List<String> list() {
         return cart.getContents();
@@ -35,6 +40,10 @@ public class CartResource {
     @Path("/add")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces("application/json")
+    @ApiOperation(value = "Returns the cart contents")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success!!"),
+    })
     @UnitOfWork
     public Response.Status add(@ApiParam(
             required = true, value = "A Book in JSON format, where the id specifies the book to be added.") Book book) {
@@ -45,6 +54,10 @@ public class CartResource {
     @POST
     @Path("/remove/{bookId}")
     @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Removes a specific book from the cart")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success!!"),
+    })
     @UnitOfWork
     public Response.Status remove(@PathParam("bookId") long bookId) {
         cart.removeBook(bookDAO.findById(bookId));

@@ -1,7 +1,7 @@
 package se.contribe.resources;
 
 import com.codahale.metrics.annotation.Timed;
-import com.wordnik.swagger.annotations.ApiParam;
+import com.wordnik.swagger.annotations.*;
 import io.dropwizard.hibernate.UnitOfWork;
 import se.contribe.core.Book;
 import se.contribe.core.BookList;
@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Path("/books")
+@Api(value = "/books", description = "Operations on the bookstore")
 public class BookResource implements BookList {
     private final BookDAO bookDAO;
 
@@ -27,6 +28,10 @@ public class BookResource implements BookList {
     @GET
     @Produces("application/json")
     @Timed
+    @ApiOperation(value = "Return all books")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success!!")
+    })
     @UnitOfWork
     public List<Book> listBooks() {
         return bookDAO.findAll();
@@ -35,6 +40,10 @@ public class BookResource implements BookList {
     @GET
     @Produces("application/json")
     @Path("/{bookId}")
+    @ApiOperation(value = "Return a book", notes = "Provide the bookId to retrieve a specific book")
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Invalid ID")
+    })
     @UnitOfWork
     public Book getBook(@PathParam("bookId") long bookId) {
         Book book = findSafely(bookId);
@@ -48,8 +57,14 @@ public class BookResource implements BookList {
     @Path("/{bookId}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces("application/json")
+    @ApiOperation(value = "Updates a book specified by its id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success!!")
+    })
     @UnitOfWork
-    public Response.Status updateBook(@Valid Book book, @PathParam("bookId") long bookId) {
+    public Response.Status updateBook(
+            @ApiParam(required = true, value = "A Book in JSON format, where the id specifies the book.") Book book,
+            @PathParam("bookId") long bookId) {
         if (book.getId() == null) {
             book.setId(bookId);
         }
@@ -59,6 +74,10 @@ public class BookResource implements BookList {
 
     @DELETE
     @Path("/{bookId}")
+    @ApiOperation(value = "Deletes a book specified by its id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success!!")
+    })
     @UnitOfWork
     public Response.Status deleteBook(@PathParam("bookId") long bookId) {
         bookDAO.delete(this.getBook(bookId));
@@ -70,6 +89,10 @@ public class BookResource implements BookList {
     @Produces("application/json")
     @Path("/search/{searchString}")
     @Timed
+    @ApiOperation(value = "Searches for a book")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success!!"),
+    })
     @UnitOfWork
     public Book[] list(@PathParam("searchString") String searchString) {
         List objects = bookDAO.searchByKeyword(searchString);
@@ -81,8 +104,14 @@ public class BookResource implements BookList {
     @POST
     @Path("/add/{quantity}")
     @Consumes(MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Adds a book")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success!!"),
+    })
     @UnitOfWork
-    public boolean add(Book book, @PathParam("quantity") int quantity) {
+    public boolean add(
+            @ApiParam(required = true, value = "A Book in JSON format. The id field is ignored") Book book,
+            @PathParam("quantity") int quantity) {
         book.setId(null);
         book.setQuantity(quantity);
         long bookId = bookDAO.create(book);
@@ -94,8 +123,12 @@ public class BookResource implements BookList {
     @Path("/buy")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces("application/json")
+    @ApiOperation(value = "Perform a purchase of books")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success!!"),
+    })
     @UnitOfWork
-    public int[] buy(Book... books) {
+    public int[] buy(@ApiParam(required = true, value = "A list of books in JSON format. You can get a list from theCart API or from /api/books.") Book... books) {
         int[] bookStatuses = new int[books.length];
         List<Book> booksFromDb = bookDAO.findAll();
         for (int index = 0; index < books.length; index++) {
