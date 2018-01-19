@@ -1,0 +1,51 @@
+[
+  {
+    "id": 1,
+    "title": "Mastering åäö",
+    "author": "Average Swede",
+    "price": 762,
+    "quantity": 15
+  },
+  {
+    "id": 2,
+    "title": "How To Spend Money",
+    "author": "Rich Bloke",
+    "price": 100000000,
+    "quantity": 1
+  },
+  {
+    "id": 3,
+    "title": "Generic Title",
+    "author": "First Author",
+    "price": 185.5,
+    "quantity": 5
+  },
+  {
+    "id": 4,
+    "title": "Generic Title",
+    "author": "Second Author",
+    "price": 1748,
+    "quantity": 3
+  },
+  {
+    "id": 5,
+    "title": "Random Sales",
+    "author": "Cunning Bastard",
+    "price": 999,
+    "quantity": 20
+  },
+  {
+    "id": 6,
+    "title": "Random Sales",
+    "author": "Cunning Bastard",
+    "price": 499.5,
+    "quantity": 3
+  },
+  {
+    "id": 7,
+    "title": "Desired",
+    "author": "Rich Bloke",
+    "price": 564.5,
+    "quantity": 0
+  }
+]
