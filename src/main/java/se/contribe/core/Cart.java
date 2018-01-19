@@ -24,10 +24,13 @@ public class Cart {
         return bookList;
     }
 
-    public void addBook(Book book) {
-        if (!bookList.contains(book)) {
+    public boolean addBook(Book book) {
+        if (bookList.contains(book)) {
+            return false;
+        } else {
             bookList.add(book);
             totalPrice = totalPrice.add(book.getPrice());
+            return true;
         }
     }
 
@@ -37,7 +40,7 @@ public class Cart {
      */
     public void removeBook(Book book) {
         if (bookList.contains(book)) {
-            bookList.add(book);
+            bookList.remove(book);
             totalPrice = totalPrice.subtract(book.getPrice());
         }
     }
@@ -57,8 +60,7 @@ public class Cart {
     public List<String> getContents() {
         List<String> contents = new ArrayList<>();
         for (Book book : bookList) {
-            contents.add(book.getTitle());
-            totalPrice = totalPrice.add(book.getPrice());
+            contents.add(String.format("%s, %s, %s", book.getTitle(), book.getAuthor(), book.getPrice()));
         }
         contents.add(String.format("Total Price: %s", totalPrice.toString()));
         return contents;

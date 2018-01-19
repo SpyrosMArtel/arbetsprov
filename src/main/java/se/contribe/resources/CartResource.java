@@ -7,7 +7,6 @@ import se.contribe.core.Book;
 import se.contribe.core.Cart;
 import se.contribe.db.BookDAO;
 
-import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -43,24 +42,36 @@ public class CartResource {
     @ApiOperation(value = "Returns the cart contents")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success!!"),
+            @ApiResponse(code = 400, message = "Either book was not found or it was an invalid entry")
     })
     @UnitOfWork
-    public Response.Status add(@ApiParam(
+    public Response add(@ApiParam(
             required = true, value = "A Book in JSON format, where the id specifies the book to be added.") Book book) {
-        cart.addBook(bookDAO.findById(book.getId()));
-        return Response.Status.OK;
+        Book bookToAdd = bookDAO.findById(book.getId());
+        if (bookToAdd == null || !bookToAdd.equals(book)) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(book).build();
+        }
+        if (cart.addBook(bookToAdd)) {
+            return Response.status(Response.Status.OK).build();
+        } else {
+            return Response.status(Response.Status.OK).build();
+        }
     }
 
-    @POST
+    @DELETE
     @Path("/remove/{bookId}")
-    @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Removes a specific book from the cart")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success!!"),
+            @ApiResponse(code = 204, message = "Success!!")
     })
     @UnitOfWork
-    public Response.Status remove(@PathParam("bookId") long bookId) {
-        cart.removeBook(bookDAO.findById(bookId));
-        return Response.Status.NO_CONTENT;
+    public Response remove(@PathParam("bookId") long bookId) {
+        Book bookToRemove = bookDAO.findById(bookId);
+        if (bookToRemove != null) {
+            cart.removeBook(bookToRemove);
+            return Response.status(Response.Status.NO_CONTENT).build();
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
     }
 }

@@ -2,6 +2,7 @@ package se.contribe.core;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -112,6 +113,7 @@ public class Book {
      * @return The price of the book as a BigDecimal.
      */
     @JsonProperty
+    @JsonSerialize(using = BigDecimalSerializer.class)
     public BigDecimal getPrice() {
         return price;
     }
@@ -121,7 +123,7 @@ public class Book {
      * @param price The value in currency of the book.
      */
     public void setPrice(BigDecimal price) {
-        this.price = price;
+        this.price = price.setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
     /**
