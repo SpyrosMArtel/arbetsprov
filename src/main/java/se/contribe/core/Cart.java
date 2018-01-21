@@ -24,6 +24,11 @@ public class Cart {
         return bookList;
     }
 
+    /**
+     * Adds a book's digital representation to the cart.
+     * @param book The @{@link Book} object to be added to the cart.
+     * @return True if the book added successfully in the cart, false otherwise.
+     */
     public boolean addBook(Book book) {
         if (bookList.contains(book)) {
             return false;

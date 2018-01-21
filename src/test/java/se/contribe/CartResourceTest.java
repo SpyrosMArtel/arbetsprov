@@ -59,7 +59,7 @@ public class CartResourceTest {
         for (Book book : books) {
             when(dao.findById(eq(book.getId()))).thenReturn(book);
             Response result = resources.client()
-                    .target("/cart/add")
+                    .target("/cart")
                     .request()
                     .post(Entity.entity(book, MediaType.APPLICATION_JSON_TYPE), Response.class);
 
@@ -100,7 +100,7 @@ public class CartResourceTest {
         for (Book book : books) {
             when(dao.findById(eq(book.getId()))).thenReturn(book);
             Response result = resources.client()
-                    .target(String.format("/cart/remove/%d", book.getId()))
+                    .target(String.format("/cart/%d", book.getId()))
                     .request()
                     .delete(Response.class);
 

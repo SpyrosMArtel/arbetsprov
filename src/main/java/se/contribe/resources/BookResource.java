@@ -102,7 +102,7 @@ public class BookResource implements BookList {
 
     @Override
     @POST
-    @Path("/add/{quantity}")
+    @Path("/{quantity}")
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Adds a book")
     @ApiResponses(value = {

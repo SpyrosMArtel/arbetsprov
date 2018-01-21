@@ -71,7 +71,7 @@ public class BookResourceTest {
     @Test
     public void testAddBook() throws IOException {
         Boolean result = resources.client()
-                .target("/books/add/3")
+                .target("/books/3")
                 .request()
                 .post(Entity.entity(books[0], MediaType.APPLICATION_JSON_TYPE), Boolean.class);
 

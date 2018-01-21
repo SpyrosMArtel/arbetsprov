@@ -36,7 +36,6 @@ public class CartResource {
     }
 
     @POST
-    @Path("/add")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces("application/json")
     @ApiOperation(value = "Returns the cart contents")
@@ -59,7 +58,7 @@ public class CartResource {
     }
 
     @DELETE
-    @Path("/remove/{bookId}")
+    @Path("/{bookId}")
     @ApiOperation(value = "Removes a specific book from the cart")
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "Success!!")
